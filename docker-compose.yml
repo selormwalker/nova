@@ -1,0 +1,65 @@
+version: '3.9'
+
+services:
+  # ── Frontend (NOVA IDE) ──────────────────────────────────────────────────
+  nova-ide:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    container_name: nova-ide
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./docker/nginx.conf:/etc/nginx/conf.d/nova.conf:ro
+      - ./ssl:/etc/ssl:ro
+    networks:
+      - nova-net
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.nova.rule=Host(`nova-ide.app`)"
+      - "traefik.http.routers.nova.entrypoints=websecure"
+      - "traefik.http.routers.nova.tls.certresolver=letsencrypt"
+
+  # ── Redis (for sessions / collaboration) ─────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    container_name: nova-redis
+    restart: unless-stopped
+    command: redis-server --requirepass ${REDIS_PASSWORD:-novapass}
+    volumes:
+      - redis-data:/data
+    networks:
+      - nova-net
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+  # ── Watchtower: auto-update containers ───────────────────────────────────
+  watchtower:
+    image: containrrr/watchtower
+    container_name: nova-watchtower
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      WATCHTOWER_CLEANUP: "true"
+      WATCHTOWER_SCHEDULE: "0 0 4 * * *"  # 4am daily
+    networks:
+      - nova-net
+
+volumes:
+  redis-data:
+
+networks:
+  nova-net:
+    driver: bridge
