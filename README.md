@@ -45,7 +45,7 @@ cp .env.example .env.local
 docker compose up -d
 ```
 
-### Option 3 — Dev server
+### Option 3 — Dev servers
 
 ```bash
 npm install
