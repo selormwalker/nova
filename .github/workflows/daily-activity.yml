@@ -2,7 +2,7 @@ name: Daily Activity
 
 on:
   schedule:
-    - cron: '0 0,8,16 * * *'
+    - cron: '0 */2 * * *' # Runs every 2 hours (12 times a day)
   workflow_dispatch:
 
 jobs:
