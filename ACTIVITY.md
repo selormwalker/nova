@@ -44,3 +44,6 @@ ACTIVITY: Added automated self-healing and health-monitoring routines to the clu
 TIMESTAMP: Sun May 10 18:06:20 UTC 2026
 ACTIVITY: Identified and resolved a critical memory bottleneck in the background service.
 ---
+TIMESTAMP: Sun May 10 19:34:25 UTC 2026
+ACTIVITY: Updated the technical architecture docs to reflect recent infrastructure changes.
+---
