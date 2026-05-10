@@ -29,3 +29,6 @@ ACTIVITY: Implemented extensible handlers for incoming data pulse.
 TIMESTAMP: Sun May 10 11:01:08 UTC 2026
 ACTIVITY: Added new optimization layer to the core engine.
 ---
+TIMESTAMP: Sun May 10 13:22:11 UTC 2026
+ACTIVITY: Updated the technical architecture docs for clarity.
+---
