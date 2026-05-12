@@ -116,3 +116,6 @@ ACTIVITY: Improved the asynchronous processing speed of the main loop by 20%.
 TIMESTAMP: Tue May 12 19:20:42 UTC 2026
 ACTIVITY: Enhanced the visual polish of the CLI output for a better developer experience.
 ---
+TIMESTAMP: Tue May 12 21:06:10 UTC 2026
+ACTIVITY: Updated the technical architecture docs to reflect recent infrastructure changes.
+---
