@@ -341,3 +341,6 @@ ACTIVITY: Enhanced the visual polish of the CLI output for a better developer ex
 TIMESTAMP: Mon May 18 10:10:45 UTC 2026
 ACTIVITY: Identified and resolved a critical memory bottleneck in the background service.
 ---
+TIMESTAMP: Mon May 18 14:01:44 UTC 2026
+ACTIVITY: Updated the technical architecture docs to reflect recent infrastructure changes.
+---
