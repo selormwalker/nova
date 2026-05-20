@@ -401,3 +401,6 @@ ACTIVITY: Hardened the API gateway layer against unexpected service interruption
 TIMESTAMP: Wed May 20 08:49:36 UTC 2026
 ACTIVITY: Hardened the API gateway layer against unexpected service interruptions.
 ---
+TIMESTAMP: Wed May 20 11:38:28 UTC 2026
+ACTIVITY: Updated the technical architecture docs to reflect recent infrastructure changes.
+---
