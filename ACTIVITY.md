@@ -461,3 +461,6 @@ ACTIVITY: Refactored shared utility modules for better maintainability and reuse
 TIMESTAMP: Fri May 22 11:35:05 UTC 2026
 ACTIVITY: Patched a potential race condition in the asynchronous task scheduler.
 ---
+TIMESTAMP: Fri May 22 13:57:23 UTC 2026
+ACTIVITY: Updated the technical architecture docs to reflect recent infrastructure changes.
+---
