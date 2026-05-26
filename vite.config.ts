@@ -72,12 +72,14 @@ export default defineConfig({
     chunkSizeWarningLimit: 1000,
     rollupOptions: {
       output: {
-        manualChunks: {
-          'react-vendor':  ['react', 'react-dom'],
-          'monaco-core':   ['monaco-editor'],
-          'monaco-react':  ['@monaco-editor/react'],
-          'xterm':         ['xterm', 'xterm-addon-fit', 'xterm-addon-web-links', 'xterm-addon-search'],
-          'utils':         ['zustand', 'idb', 'fuse.js'],
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (id.includes('react') || id.includes('react-dom')) return 'react-vendor';
+            if (id.includes('monaco-editor')) return 'monaco-core';
+            if (id.includes('@monaco-editor/react')) return 'monaco-react';
+            if (id.includes('xterm')) return 'xterm';
+            if (id.includes('zustand') || id.includes('idb') || id.includes('fuse.js')) return 'utils';
+          }
         },
       },
     },
