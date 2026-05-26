@@ -12,24 +12,26 @@ const Editor: React.FC = () => {
     }
   };
 
-  const handleSave = async (event: KeyboardEvent) => {
-    if ((event.ctrlKey || event.metaKey) && event.key === 's') {
-      event.preventDefault();
-      if (activeFile) {
-        try {
-          await writeFileContent(activeFile.handle, activeFile.content);
-          console.log('File saved successfully');
-        } catch (err) {
-          console.error('Failed to save file:', err);
+  const handleSave = React.useCallback(
+    async (event: KeyboardEvent) => {
+      if ((event.ctrlKey || event.metaKey) && event.key === 's') {
+        event.preventDefault();
+        if (activeFile) {
+          try {
+            await writeFileContent(activeFile.handle, activeFile.content);
+          } catch (err) {
+            // Error handling could be improved with a UI notification
+          }
         }
       }
-    }
-  };
+    },
+    [activeFile]
+  );
 
   React.useEffect(() => {
     window.addEventListener('keydown', handleSave);
     return () => window.removeEventListener('keydown', handleSave);
-  }, [activeFile]);
+  }, [handleSave]);
 
   if (!activeFile) {
     return (

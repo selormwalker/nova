@@ -48,12 +48,13 @@ const Sidebar: React.FC = () => {
 
   const handleOpenFolder = async () => {
     try {
-      const handle = await (window as any).showDirectoryPicker();
+      // @ts-expect-error - showDirectoryPicker is not yet in the standard Window interface
+      const handle = await window.showDirectoryPicker();
       setRootHandle(handle);
       const tree = await readDirectory(handle);
       setFileTree(tree);
     } catch (err) {
-      console.error('Failed to open directory:', err);
+      // Error handling
     }
   };
 
