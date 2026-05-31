@@ -28,7 +28,7 @@ const FileItem: React.FC<{ node: FileNode; depth: number }> = ({ node, depth }) 
     if (node.kind === 'directory') {
       return isOpen ? '📂' : '📁';
     }
-    const ext = node.name.split('.').pop();
+    const ext = node.name.split('.').pop()?.toLowerCase();
     switch (ext) {
       case 'ts':
       case 'tsx': return '🔷';
@@ -38,6 +38,9 @@ const FileItem: React.FC<{ node: FileNode; depth: number }> = ({ node, depth }) 
       case 'html': return '🌐';
       case 'json': return '⚙️';
       case 'md': return '📝';
+      case 'py': return '🐍';
+      case 'cpp': return '🛡️';
+      case 'rs': return '⚙️';
       default: return '📄';
     }
   };
@@ -47,29 +50,38 @@ const FileItem: React.FC<{ node: FileNode; depth: number }> = ({ node, depth }) 
       <div 
         onClick={handleClick}
         style={{ 
-          padding: '4px 12px', 
-          paddingLeft: `${depth * 12 + 12}px`,
+          padding: '6px 12px', 
+          paddingLeft: `${depth * 12 + 15}px`,
           cursor: 'pointer', 
           fontSize: '13px', 
           display: 'flex', 
           alignItems: 'center', 
-          gap: '8px',
+          gap: '10px',
           color: isActive ? 'var(--primary)' : 'var(--text)',
           background: isActive ? 'var(--active-light)' : 'transparent',
           whiteSpace: 'nowrap',
           overflow: 'hidden',
           textOverflow: 'ellipsis',
-          borderLeft: isActive ? '2px solid var(--primary)' : '2px solid transparent'
+          transition: 'background 0.1s',
+          fontWeight: isActive ? '600' : '400'
         }}
-        onMouseOver={(e) => { if (!isActive) e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; }}
+        onMouseOver={(e) => { if (!isActive) e.currentTarget.style.background = 'rgba(255,255,255,0.03)'; }}
         onMouseOut={(e) => { if (!isActive) e.currentTarget.style.background = 'transparent'; }}
       >
-        <span style={{ fontSize: '10px', opacity: 0.5, transform: isOpen ? 'rotate(90deg)' : 'none', transition: 'transform 0.1s', display: node.kind === 'directory' ? 'inline-block' : 'none' }}>▶</span>
-        <span style={{ fontSize: '14px' }}>{getIcon()}</span>
-        <span>{node.name}</span>
+        <span style={{ 
+          fontSize: '9px', 
+          opacity: 0.5, 
+          transform: isOpen ? 'rotate(90deg)' : 'none', 
+          transition: 'transform 0.1s', 
+          display: node.kind === 'directory' ? 'inline-block' : 'none',
+          width: '10px'
+        }}>▶</span>
+        {!isOpen && node.kind === 'directory' && <span style={{ width: '10px', display: 'none' }}></span>}
+        <span style={{ fontSize: '15px', display: 'flex', alignItems: 'center' }}>{getIcon()}</span>
+        <span style={{ opacity: isActive ? 1 : 0.85 }}>{node.name}</span>
       </div>
       {node.kind === 'directory' && isOpen && node.children && (
-        <div style={{ borderLeft: '1px solid var(--border)', marginLeft: `${depth * 12 + 20}px` }}>
+        <div style={{ marginLeft: '1px' }}>
           {node.children.map(child => (
             <FileItem key={child.path} node={child} depth={depth + 1} />
           ))}
@@ -96,33 +108,24 @@ const Sidebar: React.FC = () => {
 
   return (
     <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-      <div style={{ padding: '15px', borderBottom: '1px solid var(--border)', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-        <div style={{ fontSize: '11px', fontWeight: 'bold', color: 'var(--text-dim)', letterSpacing: '1px' }}>EXPLORER</div>
+      <div style={{ padding: '15px', borderBottom: '1px solid var(--border)', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+        <div style={{ fontSize: '11px', fontWeight: '800', color: 'var(--text-dim)', letterSpacing: '1.2px', opacity: 0.7 }}>EXPLORER</div>
         <button 
           onClick={handleOpenFolder}
-          style={{ 
-            width: '100%', 
-            padding: '6px', 
-            background: 'var(--active)', 
-            color: 'white', 
-            border: 'none', 
-            borderRadius: '4px', 
-            cursor: 'pointer',
-            fontSize: '11px',
-            fontWeight: '600'
-          }}
+          className="btn"
+          style={{ width: '100%', height: '28px' }}
         >
           OPEN FOLDER
         </button>
       </div>
-      <div style={{ flex: 1, overflowY: 'auto', padding: '10px 0' }}>
+      <div style={{ flex: 1, overflowY: 'auto', padding: '8px 0' }}>
         {fileTree.length > 0 ? (
           fileTree.map(node => (
             <FileItem key={node.path} node={node} depth={0} />
           ))
         ) : (
-          <div style={{ padding: '20px', textAlign: 'center', fontSize: '12px', color: 'var(--text-dim)' }}>
-            No folder opened
+          <div style={{ padding: '30px 20px', textAlign: 'center', fontSize: '12px', color: 'var(--text-dim)', lineHeight: '1.6' }}>
+            No folder workspace<br/>currently active
           </div>
         )}
       </div>

@@ -18,17 +18,17 @@ const App: React.FC = () => {
   return (
     <div style={{ height: '100vh', width: '100vw', display: 'flex', flexDirection: 'column', background: 'var(--bg)', color: 'var(--text)' }}>
       {/* Top Bar */}
-      <div style={{ height: '35px', background: 'var(--bg-sidebar)', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', padding: '0 15px', fontSize: '12px', fontWeight: 'bold', justifyContent: 'space-between' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <span style={{ color: 'var(--primary)', fontSize: '18px' }}>✦</span>
-          <span>NOVA IDE</span>
+      <div style={{ height: 'var(--topbar-height)', background: 'var(--bg-sidebar)', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', padding: '0 15px', justifyContent: 'space-between', zIndex: 10 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <div style={{ width: '24px', height: '24px', background: 'var(--active)', borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: '16px' }}>✦</div>
+          <span style={{ fontSize: '13px', fontWeight: '700', letterSpacing: '0.5px' }}>NOVA <span style={{ color: 'var(--primary)' }}>IDE</span></span>
         </div>
         
-        <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <select 
             value={theme} 
             onChange={(e) => setTheme(e.target.value as any)}
-            style={{ background: 'transparent', color: 'var(--text)', border: '1px solid var(--border)', fontSize: '11px', padding: '2px 5px', outline: 'none', borderRadius: '3px' }}
+            className="select"
           >
             <option value="nova-dark">Nova Dark</option>
             <option value="nova-light">Nova Light</option>
@@ -38,7 +38,8 @@ const App: React.FC = () => {
           
           <button 
             onClick={() => setShowAI(!showAI)}
-            style={{ background: showAI ? 'var(--active)' : 'transparent', color: 'var(--text)', border: '1px solid var(--border)', fontSize: '11px', padding: '2px 8px', cursor: 'pointer', borderRadius: '3px' }}
+            className={`btn ${!showAI ? 'btn-outline' : ''}`}
+            style={{ height: '24px' }}
           >
             AI Assistant
           </button>
@@ -47,15 +48,15 @@ const App: React.FC = () => {
 
       <div style={{ flex: 1 }}>
         <PanelGroup direction="horizontal">
-          <Panel defaultSize={20} minSize={15}>
+          <Panel defaultSize={18} minSize={10}>
             <div style={{ height: '100%', background: 'var(--bg-sidebar)', borderRight: '1px solid var(--border)' }}>
               <Sidebar />
             </div>
           </Panel>
           
-          <PanelResizeHandle style={{ width: '2px', background: 'var(--border)', cursor: 'col-resize' }} />
+          <PanelResizeHandle style={{ width: '1px', background: 'var(--border)', cursor: 'col-resize' }} />
           
-          <Panel defaultSize={showAI ? 60 : 80}>
+          <Panel defaultSize={showAI ? 60 : 82}>
             <PanelGroup direction="vertical">
               <Panel defaultSize={70}>
                 <div style={{ height: '100%', background: 'var(--bg)' }}>
@@ -63,7 +64,7 @@ const App: React.FC = () => {
                 </div>
               </Panel>
               
-              <PanelResizeHandle style={{ height: '2px', background: 'var(--border)', cursor: 'row-resize' }} />
+              <PanelResizeHandle style={{ height: '1px', background: 'var(--border)', cursor: 'row-resize' }} />
               
               <Panel defaultSize={30}>
                 <div style={{ height: '100%' }}>
@@ -75,12 +76,12 @@ const App: React.FC = () => {
 
           {showAI && (
             <>
-              <PanelResizeHandle style={{ width: '2px', background: 'var(--border)', cursor: 'col-resize' }} />
-              <Panel defaultSize={20} minSize={15}>
+              <PanelResizeHandle style={{ width: '1px', background: 'var(--border)', cursor: 'col-resize' }} />
+              <Panel defaultSize={22} minSize={15}>
                 <div style={{ height: '100%', background: 'var(--bg-sidebar)', borderLeft: '1px solid var(--border)', display: 'flex', flexDirection: 'column' }}>
-                  <div style={{ padding: '15px', fontWeight: 'bold', fontSize: '13px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div style={{ padding: '12px 15px', fontWeight: '700', fontSize: '11px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: 'var(--text-dim)', letterSpacing: '1px' }}>
                     <span>AI ASSISTANT</span>
-                    <button onClick={() => setShowAI(false)} style={{ background: 'transparent', border: 'none', color: 'var(--text-dim)', cursor: 'pointer', fontSize: '16px' }}>✕</button>
+                    <button onClick={() => setShowAI(false)} style={{ background: 'transparent', border: 'none', color: 'var(--text-dim)', cursor: 'pointer', fontSize: '14px' }}>✕</button>
                   </div>
                   <AIChat />
                 </div>
@@ -91,12 +92,24 @@ const App: React.FC = () => {
       </div>
 
       {/* Status Bar */}
-      <div style={{ height: '25px', background: 'var(--active)', color: 'white', display: 'flex', alignItems: 'center', padding: '0 10px', fontSize: '11px', justifyContent: 'space-between' }}>
-        <div>Ready</div>
-        <div style={{ display: 'flex', gap: '15px' }}>
+      <div style={{ height: 'var(--statusbar-height)', background: 'var(--active)', color: 'white', display: 'flex', alignItems: 'center', padding: '0 12px', fontSize: '11px', justifyContent: 'space-between', fontWeight: '500' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+            <span>●</span>
+            <span>Connected</span>
+          </div>
+          <span>v1.0.4</span>
+        </div>
+        <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
           <span>UTF-8</span>
-          <span>TypeScript</span>
-          <span>main*</span>
+          <span style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+            <span style={{ fontSize: '14px' }}>⌥</span>
+            <span>TypeScript</span>
+          </span>
+          <span style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+            <span style={{ fontSize: '14px' }}></span>
+            <span>main*</span>
+          </span>
         </div>
       </div>
     </div>

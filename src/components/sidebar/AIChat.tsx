@@ -29,13 +29,11 @@ const AIChat: React.FC = () => {
     setInput('');
     setIsLoading(true);
 
-    // Prepare context
     let prompt = input;
     if (activeFile) {
       prompt = `Context: Current file is "${activeFile.name}".\n\nContent:\n\`\`\`${activeFile.name.split('.').pop()}\n${activeFile.content}\n\`\`\`\n\nUser Question: ${input}`;
     }
 
-    // Convert history for Gemini
     const history = chatMessages.map(m => ({
       role: m.role === 'user' ? 'user' as const : 'model' as const,
       parts: [{ text: m.content }]
@@ -54,42 +52,57 @@ const AIChat: React.FC = () => {
   };
 
   return (
-    <div style={{ height: 'calc(100% - 50px)', display: 'flex', flexDirection: 'column' }}>
-      <div style={{ flex: 1, overflowY: 'auto', padding: '15px', display: 'flex', flexDirection: 'column', gap: '15px' }}>
+    <div style={{ height: 'calc(100% - 40px)', display: 'flex', flexDirection: 'column' }}>
+      <div style={{ flex: 1, overflowY: 'auto', padding: '15px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
         {chatMessages.length === 0 && (
-          <div style={{ textAlign: 'center', marginTop: '40px', color: 'var(--text-dim)' }}>
-            <div style={{ fontSize: '30px', marginBottom: '10px' }}>🤖</div>
-            <p>I can help you with your code, explain logic, or suggest improvements.</p>
+          <div style={{ textAlign: 'center', marginTop: '60px', padding: '0 20px' }}>
+            <div style={{ fontSize: '42px', marginBottom: '20px', opacity: 0.2 }}>✨</div>
+            <div style={{ fontSize: '14px', fontWeight: '700', color: 'var(--text)', marginBottom: '10px' }}>How can Nova help today?</div>
+            <p style={{ fontSize: '12px', color: 'var(--text-dim)', lineHeight: '1.6' }}>I can explain this file, find bugs, or help you architect new features.</p>
           </div>
         )}
         {chatMessages.map((msg, i) => (
           <div key={i} style={{ 
             alignSelf: msg.role === 'user' ? 'flex-end' : 'flex-start',
-            maxWidth: '90%',
+            maxWidth: '92%',
             background: msg.role === 'user' ? 'var(--active-light)' : 'var(--bg)',
-            padding: '10px',
-            borderRadius: '8px',
+            padding: '12px 16px',
+            borderRadius: '12px',
             border: '1px solid var(--border)',
             fontSize: '13px',
-            lineHeight: '1.5',
-            whiteSpace: 'pre-wrap'
+            lineHeight: '1.6',
+            whiteSpace: 'pre-wrap',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+            position: 'relative'
           }}>
-            <div style={{ fontWeight: 'bold', fontSize: '10px', marginBottom: '4px', color: 'var(--primary)', opacity: 0.7 }}>
-              {msg.role === 'user' ? 'YOU' : 'NOVA AI'}
+            <div style={{ 
+              fontWeight: '800', 
+              fontSize: '9px', 
+              marginBottom: '6px', 
+              color: msg.role === 'user' ? 'var(--primary)' : 'var(--text-dim)', 
+              letterSpacing: '0.5px',
+              textTransform: 'uppercase'
+            }}>
+              {msg.role === 'user' ? 'You' : 'Nova AI'}
             </div>
             {msg.content}
           </div>
         ))}
         {isLoading && (
-          <div style={{ alignSelf: 'flex-start', color: 'var(--text-dim)', fontSize: '12px' }}>
-            Nova AI is thinking...
+          <div style={{ alignSelf: 'flex-start', color: 'var(--text-dim)', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '8px', padding: '0 10px' }}>
+            <div className="loading-dots" style={{ display: 'flex', gap: '3px' }}>
+               <span style={{ width: '4px', height: '4px', background: 'var(--primary)', borderRadius: '50%' }}></span>
+               <span style={{ width: '4px', height: '4px', background: 'var(--primary)', borderRadius: '50%', opacity: 0.6 }}></span>
+               <span style={{ width: '4px', height: '4px', background: 'var(--primary)', borderRadius: '50%', opacity: 0.3 }}></span>
+            </div>
+            Nova AI is composing...
           </div>
         )}
         <div ref={messagesEndRef} />
       </div>
 
-      <div style={{ padding: '15px', borderTop: '1px solid var(--border)', background: 'var(--bg-sidebar)' }}>
-        <div style={{ position: 'relative' }}>
+      <div style={{ padding: '15px', borderTop: '1px solid var(--border)', background: 'var(--bg-sidebar)', zIndex: 5 }}>
+        <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', gap: '10px' }}>
           <textarea
             value={input}
             onChange={(e) => setInput(e.target.value)}
@@ -99,46 +112,36 @@ const AIChat: React.FC = () => {
                 handleSend();
               }
             }}
-            placeholder="Ask Nova AI..."
+            placeholder="Ask anything..."
+            className="input"
             style={{
               width: '100%',
-              height: '80px',
-              background: 'var(--bg)',
-              color: 'var(--text)',
-              border: '1px solid var(--border)',
-              borderRadius: '6px',
-              padding: '10px',
-              fontSize: '13px',
+              height: '90px',
               resize: 'none',
-              outline: 'none'
+              paddingRight: '10px',
+              lineHeight: '1.5',
+              borderRadius: 'var(--radius-md)'
             }}
           />
-          <button 
-            onClick={handleSend}
-            disabled={isLoading || !input.trim()}
-            style={{
-              position: 'absolute',
-              right: '10px',
-              bottom: '10px',
-              background: 'var(--active)',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-              padding: '4px 8px',
-              fontSize: '11px',
-              cursor: 'pointer',
-              opacity: isLoading ? 0.5 : 1
-            }}
-          >
-            Send
-          </button>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <button 
+              onClick={clearChat}
+              style={{ background: 'transparent', border: 'none', color: 'var(--text-dim)', fontSize: '11px', cursor: 'pointer', fontWeight: '600', opacity: 0.6 }}
+              onMouseOver={(e) => e.currentTarget.style.opacity = '1'}
+              onMouseOut={(e) => e.currentTarget.style.opacity = '0.6'}
+            >
+              Clear Chat
+            </button>
+            <button 
+              onClick={handleSend}
+              disabled={isLoading || !input.trim()}
+              className="btn"
+              style={{ padding: '6px 15px' }}
+            >
+              {isLoading ? 'Wait...' : 'Send Message'}
+            </button>
+          </div>
         </div>
-        <button 
-          onClick={clearChat}
-          style={{ background: 'transparent', border: 'none', color: 'var(--text-dim)', fontSize: '11px', cursor: 'pointer', marginTop: '10px' }}
-        >
-          Clear History
-        </button>
       </div>
     </div>
   );
