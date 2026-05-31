@@ -1,44 +1,80 @@
-import React from 'react';
-import { useStore } from '../../store/useStore';
-import { readDirectory, readFileContent, FileNode } from '../../utils/fileSystem';
+import React, { useState } from 'react';
+import { useStore, FileNode, OpenFile } from '../../store/useStore';
+import { readDirectory, readFileContent } from '../../utils/fileSystem';
 
 const FileItem: React.FC<{ node: FileNode; depth: number }> = ({ node, depth }) => {
-  const setActiveFile = useStore((state) => state.setActiveFile);
+  const { setActiveFile, activeFile } = useStore();
+  const [isOpen, setIsOpen] = useState(false);
 
-  const handleClick = async () => {
-    if (node.kind === 'file') {
+  const isActive = activeFile?.path === node.path;
+
+  const handleClick = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (node.kind === 'directory') {
+      setIsOpen(!isOpen);
+    } else {
       const content = await readFileContent(node.handle as FileSystemFileHandle);
-      setActiveFile({
+      const openFile: OpenFile = {
         name: node.name,
         content,
         handle: node.handle as FileSystemFileHandle,
-      });
+        path: node.path
+      };
+      setActiveFile(openFile);
+    }
+  };
+
+  const getIcon = () => {
+    if (node.kind === 'directory') {
+      return isOpen ? '📂' : '📁';
+    }
+    const ext = node.name.split('.').pop();
+    switch (ext) {
+      case 'ts':
+      case 'tsx': return '🔷';
+      case 'js':
+      case 'jsx': return '🟨';
+      case 'css': return '🎨';
+      case 'html': return '🌐';
+      case 'json': return '⚙️';
+      case 'md': return '📝';
+      default: return '📄';
     }
   };
 
   return (
-    <div style={{ paddingLeft: `${depth * 12}px` }}>
+    <div>
       <div 
         onClick={handleClick}
         style={{ 
-          padding: '4px 8px', 
+          padding: '4px 12px', 
+          paddingLeft: `${depth * 12 + 12}px`,
           cursor: 'pointer', 
           fontSize: '13px', 
           display: 'flex', 
           alignItems: 'center', 
-          gap: '6px',
-          color: node.kind === 'directory' ? 'var(--primary)' : 'var(--text)',
+          gap: '8px',
+          color: isActive ? 'var(--primary)' : 'var(--text)',
+          background: isActive ? 'var(--active-light)' : 'transparent',
           whiteSpace: 'nowrap',
           overflow: 'hidden',
-          textOverflow: 'ellipsis'
+          textOverflow: 'ellipsis',
+          borderLeft: isActive ? '2px solid var(--primary)' : '2px solid transparent'
         }}
+        onMouseOver={(e) => { if (!isActive) e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; }}
+        onMouseOut={(e) => { if (!isActive) e.currentTarget.style.background = 'transparent'; }}
       >
-        <span>{node.kind === 'directory' ? '📁' : '📄'}</span>
-        {node.name}
+        <span style={{ fontSize: '10px', opacity: 0.5, transform: isOpen ? 'rotate(90deg)' : 'none', transition: 'transform 0.1s', display: node.kind === 'directory' ? 'inline-block' : 'none' }}>▶</span>
+        <span style={{ fontSize: '14px' }}>{getIcon()}</span>
+        <span>{node.name}</span>
       </div>
-      {node.children && node.children.map(child => (
-        <FileItem key={child.name} node={child} depth={depth + 1} />
-      ))}
+      {node.kind === 'directory' && isOpen && node.children && (
+        <div style={{ borderLeft: '1px solid var(--border)', marginLeft: `${depth * 12 + 20}px` }}>
+          {node.children.map(child => (
+            <FileItem key={child.path} node={child} depth={depth + 1} />
+          ))}
+        </div>
+      )}
     </div>
   );
 };
@@ -54,34 +90,41 @@ const Sidebar: React.FC = () => {
       const tree = await readDirectory(handle);
       setFileTree(tree);
     } catch (err) {
-      // Error handling
+      console.error("Folder picker error:", err);
     }
   };
 
   return (
     <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-      <div style={{ padding: '15px', borderBottom: '1px solid var(--border)' }}>
+      <div style={{ padding: '15px', borderBottom: '1px solid var(--border)', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+        <div style={{ fontSize: '11px', fontWeight: 'bold', color: 'var(--text-dim)', letterSpacing: '1px' }}>EXPLORER</div>
         <button 
           onClick={handleOpenFolder}
           style={{ 
             width: '100%', 
-            padding: '8px', 
+            padding: '6px', 
             background: 'var(--active)', 
             color: 'white', 
             border: 'none', 
             borderRadius: '4px', 
             cursor: 'pointer',
-            fontSize: '12px',
+            fontSize: '11px',
             fontWeight: '600'
           }}
         >
-          Open Folder
+          OPEN FOLDER
         </button>
       </div>
       <div style={{ flex: 1, overflowY: 'auto', padding: '10px 0' }}>
-        {fileTree.map(node => (
-          <FileItem key={node.name} node={node} depth={1} />
-        ))}
+        {fileTree.length > 0 ? (
+          fileTree.map(node => (
+            <FileItem key={node.path} node={node} depth={0} />
+          ))
+        ) : (
+          <div style={{ padding: '20px', textAlign: 'center', fontSize: '12px', color: 'var(--text-dim)' }}>
+            No folder opened
+          </div>
+        )}
       </div>
     </div>
   );

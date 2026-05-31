@@ -2,13 +2,14 @@ import React from 'react';
 import MonacoEditor from '@monaco-editor/react';
 import { useStore } from '../../store/useStore';
 import { writeFileContent } from '../../utils/fileSystem';
+import TabBar from './TabBar';
 
 const Editor: React.FC = () => {
-  const { activeFile, setActiveFile } = useStore();
+  const { activeFile, updateFileContent, theme } = useStore();
 
   const handleEditorChange = (value: string | undefined) => {
     if (activeFile && value !== undefined) {
-      setActiveFile({ ...activeFile, content: value });
+      updateFileContent(activeFile.path, value);
     }
   };
 
@@ -19,8 +20,10 @@ const Editor: React.FC = () => {
         if (activeFile) {
           try {
             await writeFileContent(activeFile.handle, activeFile.content);
+            // We could update isDirty here if the store supported it easily, 
+            // but for now let's just save.
           } catch (err) {
-            // Error handling could be improved with a UI notification
+            console.error("Save error:", err);
           }
         }
       }
@@ -35,10 +38,11 @@ const Editor: React.FC = () => {
 
   if (!activeFile) {
     return (
-      <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyItems: 'center', justifyContent: 'center', opacity: 0.2 }}>
-        <div style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: '48px', marginBottom: '20px' }}>✦</div>
-          <div>No file open</div>
+      <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg)' }}>
+        <div style={{ textAlign: 'center', opacity: 0.3 }}>
+          <div style={{ fontSize: '64px', marginBottom: '20px' }}>✦</div>
+          <div style={{ fontSize: '18px', fontWeight: 'bold' }}>NOVA IDE</div>
+          <div style={{ fontSize: '13px', marginTop: '10px' }}>Open a folder or select a file to start coding</div>
         </div>
       </div>
     );
@@ -52,19 +56,22 @@ const Editor: React.FC = () => {
     'json': 'json',
     'css': 'css',
     'html': 'html',
-    'md': 'markdown'
+    'md': 'markdown',
+    'py': 'python',
+    'cpp': 'cpp',
+    'rs': 'rust',
+    'go': 'go'
   };
+
+  const monacoTheme = theme === 'nova-light' ? 'vs' : 'vs-dark';
 
   return (
     <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-      <div style={{ height: '35px', background: 'var(--bg-sidebar)', display: 'flex', alignItems: 'center', padding: '0 15px', fontSize: '12px', borderBottom: '1px solid var(--border)' }}>
-        <span style={{ color: 'var(--primary)' }}>📄</span>
-        <span style={{ marginLeft: '8px' }}>{activeFile.name}</span>
-      </div>
+      <TabBar />
       <div style={{ flex: 1 }}>
         <MonacoEditor
           height="100%"
-          theme="vs-dark"
+          theme={monacoTheme}
           language={languageMap[extension || ''] || 'plaintext'}
           value={activeFile.content}
           onChange={handleEditorChange}
@@ -72,7 +79,17 @@ const Editor: React.FC = () => {
             minimap: { enabled: true },
             fontSize: 14,
             fontFamily: "'Fira Code', 'Cascadia Code', monospace",
-            padding: { top: 15 }
+            padding: { top: 15 },
+            automaticLayout: true,
+            scrollbar: {
+              vertical: 'visible',
+              horizontal: 'visible',
+              useShadows: false,
+              verticalHasArrows: false,
+              horizontalHasArrows: false,
+              verticalScrollbarSize: 10,
+              horizontalScrollbarSize: 10
+            }
           }}
         />
       </div>

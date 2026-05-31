@@ -1,0 +1,19 @@
+Error reviewing .\vite.config.ts: 'NoneType' object has no attribute 'models'
+Error reviewing .\vitest.config.ts: 'NoneType' object has no attribute 'models'
+Error reviewing .\src\App.test.tsx: 'NoneType' object has no attribute 'models'
+Error reviewing .\src\App.tsx: 'NoneType' object has no attribute 'models'
+Error reviewing .\src\main.tsx: 'NoneType' object has no attribute 'models'
+Error reviewing .\src\vite-env.d.ts: 'NoneType' object has no attribute 
+'models'
+Error reviewing .\src\components\editor\Editor.tsx: 'NoneType' object has no 
+attribute 'models'
+Error reviewing .\src\components\sidebar\Sidebar.tsx: 'NoneType' object has no 
+attribute 'models'
+Error reviewing .\src\components\terminal\Terminal.tsx: 'NoneType' object has 
+no attribute 'models'
+Error reviewing .\src\store\useStore.ts: 'NoneType' object has no attribute 
+'models'
+Error reviewing .\src\test\setup.tsx: 'NoneType' object has no attribute 
+'models'
+Error reviewing .\src\utils\fileSystem.ts: 'NoneType' object has no attribute 
+'models'
